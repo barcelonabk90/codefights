@@ -1637,6 +1637,20 @@ def divisorsSuperset(superset, n):
     return res
 
 
+
+'''
+Given a string, output its longest prefix which contains only digits.
+
+Example
+
+For inputString="123aa1", the output should be
+longestDigitsPrefix(inputString) = "123".
+'''
+import re
+def longestDigitsPrefix(s):
+    return re.findall('\d+', s)[0] if s[0].isdigit() else ''
+
+
 def sequenceElement(a, n):
     t = n 
     l = a[:]
@@ -1966,6 +1980,21 @@ def fibonacciSum(n):
         if n == 0:
             break
     return res[::-1]
+
+def fibonacciSum(n):
+    arr = [0,1,1]
+    a = 0
+    while a <= n:
+        a  = arr[-1] + arr[-2]
+        arr.append(a)
+    arr = arr[::-1][1:]
+    res = []
+    for i in arr:
+        if n >= i:
+            res.append(i)
+            n -= i
+        if n == 0:
+            return res[::-1]
             
 '''
 Let's define a specific geometric shape on an infinite grid:
@@ -2657,3 +2686,307 @@ def neighboringCells(matrix):
                 r += 1
             matrix[i][j] = r
     return matrix
+
+
+
+'''
+backups[i] is the time the ith backup was started.
+Each backup only backs up files that were not backed up or marked as trouble by the previous backups. 
+If a backup started or finished at the same moment a file was added, 
+assume that appending the new file to the queue occurred first. 
+You can also assume that the time it takes to back up a list of files is equal to the sum of the sizes of those files.
+
+Your goal is to calculate the number of trouble files for each completed backup, t
+o estimate how severely they impacted the efficiency of the backup.
+
+Example
+
+For
+
+files = [[461618501, 3], 
+         [461618502, 1], 
+         [461618504, 2], 
+         [461618506, 5], 
+         [461618507, 6]]
+and backups = [461618501, 461618502, 461618504, 461618505, 461618506],
+the output should be
+troubleFiles(files, backups) = [2, 0, 0, 0, 1].
+
+The first backup started at 461618501, backing up the first file from the files list.
+The second file was added to the queue at 461618502, and labeled as trouble.
+After that the second backup started and immediately finished since there was nothing to back up.
+At 461618504, the third file was added and marked as trouble for the first backup, 
+after which the first backup finished and the third one started. 
+Yet there was nothing to back up for it, so it finished immediately.
+At 461618505 the fourth backup started and immediately finished since there was still nothing to back up.
+At 461618506 the fourth file was added to the queue, and the fifth backup process started.
+Finally, at 461618507 the last file was added and marked as trouble for the fifth backup.
+'''
+def troubleFiles(files, backups):
+    res = []
+    for time in backups:
+        trouble = 0
+        timeAdd = 0
+        for i in range(len(files)):
+            if files[i] and files[i][0] <= time:
+                timeAdd += files[i][1]
+                files[i] = 0
+        print(files)
+        for i in range(len(files)):
+            if files[i] and time < files[i][0] <= time+ timeAdd:
+                trouble+=1
+                files[i]=0
+        res.append(trouble)
+    return res
+
+'''
+Given the adjacency matrix of the connected undirected graph with no loops or multiple edges,
+find the distance between the two specified vertices.
+
+Example
+
+For
+
+matrix = [[false, false, true],
+          [false, false, true],
+          [true, true, false]]
+vertex1 = 0 and vertex2 = 1, the output should be
+bfsDistancesUnweightedGraph2(matrix, vertex1, vertex2) = 2.
+'''
+def bfsDistancesUnweightedGraph2(matrix, vertex1, vertex2):
+    c = len(matrix)
+    visited = [0] * c
+    distance = [0] * c
+    q = []
+    visited[vertex1] = 1
+    q.append(vertex1)
+    while len(q) :
+        cur = q[0]
+        q = q[1:]
+        visited[cur] = 1
+        for nxt in range(c):
+            if matrix[cur][nxt] and not visited[nxt]:
+                visited[nxt] = 1
+                distance[nxt] = distance[cur] + 1
+                q.append(nxt)
+    return distance[vertex2]
+
+'''
+You are standing at a magical well. 
+It has two positive integers written on it: a and b.
+Each time you cast a magic marble into the well, it gives you a * b dollars and then both a and b increase by 1. 
+You have n magic marbles. How much money will you make?
+
+Example
+
+For a = 1, b = 2 and n = 2, the output should be
+magicalWell(a, b, n) = 8.
+
+You will cast your first marble and get $2, after which the numbers will become 2 and 3.
+When you cast your second marble, the well will give you $6. Overall, you'll make $8. So, the output is 8.
+
+Input/Output
+'''
+def magicalWell(a, b, n):
+    res = 0
+    while n:
+        res += a * b
+        a += 1
+        b += 1
+        n -= 1
+    return res
+
+
+'''
+You have an array of non-negative integers numbers, each less than 10numbers.length.
+Add leading zeros if necessary so that for each i, 
+numbers[i] has exactly numbers.length digits. 
+Now, write these integers under each other in the same order that they appear in the input array.
+
+From this process, you obtain a square that consists of digits. 
+If you read them from left to right, starting from the topmost row, and drop the leading zeros,
+you get the initial array. What array will you get if you read the digits from the top down,
+starting from the leftmost column, and ignoring leading zeros?
+
+Example
+
+For numbers = [12, 345, 67, 5], the output should be
+directionOfReading(numbers) = [0, 300, 1460, 2575].
+
+The square obtained in the intermediate step looks like this:
+
+0012
+0345
+0067
+0005
+'''
+def directionOfReading(numbers):
+    c = len(numbers)
+    arr = []
+    for a in numbers:
+        tmp = list(str(str(a).zfill(c) ))
+        arr.append(tmp)
+    a = []
+    for i in range(c):
+        tmp = ""
+        for j in range(c):
+            tmp += arr[j][i]
+        a.append(int(tmp))
+    return a
+
+
+'''
+You are given an array of integers. 
+Sort it in such a way that if a comes before b then 
+the sum of digits of a is less than or equal to the sum of digits of b. 
+If two numbers have the same sum of digits, the smaller one (in the regular sense) should come first. 
+For example 4 and 13 have the same sum of digits, however 4 < 13 thus 4 comes before 13 in 
+any digitalSum sorting where both are present.
+
+Example
+
+For a = [13, 20, 7, 4], the output should be
+digitalSumSort(a) = [20, 4, 13, 7].
+'''
+def digitalSumSort(a):
+    f = lambda n: sum(map(int, str(n)))
+    return sorted(sorted(a), key = f)
+
+
+
+'''
+You have an integer n. At each step, you can apply one of the following operations to it:
+
+Increase the number by 1.
+Multiply the number by 2.
+Rotate the number by 180 degrees. To do that, 
+consider the number represented as a seven-segment display character string written on a sheet of paper. 
+If you rotate that sheet of paper by 180 degrees and end up with a valid number, 
+this number is a result of that operation. If rotating the number gives you an invalid value, 
+that operation is impossible. For instance, 9865210 will turn into 0125986, 
+which becomes 125986 since the leading zero should be dropped. 
+For 347, this operation is impossible because each digit becomes invalid after being rotated by 180 degrees.
+
+
+You are allowed to perform no more than k steps. What is the maximum possible number that you can obtain?
+
+Example
+
+For n = 17 and k = 3, the output should be
+kStepMaximization(n, k) = 162.
+
+Here is the correct sequence of operations to get 162 from 17 in 3 steps:
+
+First, increase n by 1 to get 18.
+Now rotate the current value. This operation produces 81.
+Finally, multiply 81 by 2. The result equals 162, which is the answer.
+'''
+def kStepMaximization(n, k):
+    return f(n, k)
+def f(n, k):
+    if k == 0:
+        return n
+    res = ''
+    for i in str(n):
+        if i in '347':
+            return max(f(n + 1, k - 1), f(n * 2, k - 1))
+        if i in '01258':
+            res += i
+        else:
+            res += str(15 - int(i))
+    return max(f(n + 1, k - 1), f(n * 2, k - 1), f(int(res[::-1]), k - 1))
+
+
+'''
+You are given a tree with vertices numbered from 0 to N - 1.
+The tree is input as an array parent where parent[i] is the parent of the ith node of the tree. 
+The root of the tree is the vertex number 0 and it is its own parent.
+You are to paint some of the tree vertices in such a way that
+the painted vertices along with the edges between them form a full binary tree.
+What is the maximum possible size of such tree?
+
+Note that the edges' orientations after painting remain the same, so the highest painted vertex will be a new root.
+
+Example
+
+For parent = [0, 0, 1, 4, 1], the output should be
+largestFullBinaryTree(parent) = 3.
+
+The only possible way to make a full binary of size larger than 1 is to leave vertices 1, 2 and 4. Here it is:
+'''
+def largestFullBinaryTree(parent):
+
+    class Graph:
+
+        def __init__(self, parent):
+            self.maxBinTree = 1
+            self.edges = []
+            for i in range(len(parent)):
+                self.edges.append([])
+            for i in range(1, len(parent)):
+                self.edges[parent[i]].append(i)
+
+        def dfs(self, v):
+            firstMax = -1
+            secondMax = -1
+            for u in self.edges[v]:
+                curMax = self.dfs(u)
+                if curMax > firstMax:
+                    secondMax = firstMax
+                    firstMax = curMax
+                elif curMax > secondMax:
+                    secondMax = curMax
+            if secondMax == -1:
+                return 1
+            result = 1 + firstMax + secondMax
+            if result > self.maxBinTree:
+                self.maxBinTree = result
+            return result
+
+    g = Graph(parent)
+    g.dfs(0)
+    return g.maxBinTree
+
+
+'''
+Address of a website often has the following form: <protocol>://<domain>.com[/<context>] 
+where <protocol>, <domain> and <context> are non-empty strings consisting of lowercase English letters.
+Note that there may be no <context> part in an address.
+
+We need an algorithm that splits an address into an array of its parts: 
+<protocol>, <domain> and <context> (if there is one).
+
+Example
+
+For address = "http://codefights.com", the output should be
+splitAddress(address) = ["http", "codefights"];
+For address = "http://stackoverflow.com/questions", the output should be
+splitAddress(address) = ["http", "stackoverflow", "questions"].
+'''
+def splitAddress(address):
+    arr = ["://", ".com", '/']
+    for i in arr:
+        address = address.replace(i, '#')
+    return list(filter(None, address.split('#')))
+
+
+'''
+In one city it is allowed to write words on the buildings walls. 
+The local janitor, however, doesn't approve of it at all.
+Every night he vandalizes the writings by erasing all occurrences of some letter.
+Since the janitor is quite lazy, he wants to do this with just one swipe of his mop.
+
+Given a word, find the minimum width of the mop required to erase each of the letters.
+
+Example
+
+For word = "abacaba", the output should be
+theJanitor(word) = [7, 5, 1, 0, 0, ..., 0, 0] (26 elements altogether).
+'''
+def theJanitor(s):
+    a = [0] * 26
+    for i in range(26):
+        b = chr(i + 97) 
+        if b in s:
+            a[i] = len(s) - s.index(b) - s[::-1].index(b)
+    return a
